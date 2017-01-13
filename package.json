@@ -1,0 +1,31 @@
+{
+  "name": "hapi-amp",
+  "version": "1.0.0",
+  "description": "Loads AMP views",
+  "main": "index.js",
+  "scripts": {
+    "test": "lab -t 100 -a hoek -v",
+    "test-travis": "lab -r lcov | ./node_modules/.bin/coveralls"
+  },
+  "keywords": [
+    "hapi",
+    "amp",
+    "views"
+  ],
+  "author": "First+Third",
+  "license": "MIT",
+  "devDependencies": {
+    "coveralls": "^2.11.6",
+    "eslint": "^3.9.1",
+    "eslint-config-firstandthird": "^3.2.0",
+    "eslint-plugin-import": "^2.1.0",
+    "handlebars": "^4.0.5",
+    "hapi": "^16.0.2",
+    "hoek": "^4.1.0",
+    "lab": "^11.2.1",
+    "vision": "^4.0.1"
+  },
+  "dependencies": {
+    "async": "^2.1.4"
+  }
+}
