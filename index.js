@@ -36,7 +36,13 @@ exports.register = function(server, options, next) {
         path.join(templatePath, `${template}.html`),
         path.join(templatePath, `${template}.njk`)
       ], (file, cb) => {
-        fs.stat(file, cb);
+        fs.stat(file, (err, stat) => {
+          if (err) {
+            return cb();
+          }
+
+          cb(null, stat);
+        });
       }, (err, results) => { // eslint-disable-line handle-callback-err
         let templateExists = false;
 
