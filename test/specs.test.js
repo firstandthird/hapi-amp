@@ -46,6 +46,14 @@ lab.experiment('specs', () => {
         }
       });
 
+      server.route({
+        method: 'GET',
+        path: '/empty2',
+        handler(request, reply) {
+          reply.view('empty');
+        }
+      });
+
       server.start((err) => {
         Hoek.assert(!err, err);
         console.log(`Server started at: ${server.info.uri}`);
@@ -96,6 +104,33 @@ lab.experiment('specs', () => {
       url: '/empty'
     }, response => {
       Hoek.assert(response.statusCode === 204, 'Status Code not maintained');
+      done();
+    });
+  });
+
+  lab.test('original url passed through', done => {
+    server.inject({
+      url: '/test?amp=1&test=3'
+    }, response => {
+      Hoek.assert(response.result.indexOf('/test?test&#x3D;3') !== -1, 'Original url present');
+      done();
+    });
+  });
+
+  lab.test('amp url passed through', done => {
+    server.inject({
+      url: '/test?test=3'
+    }, response => {
+      Hoek.assert(response.result.indexOf('/test?test&#x3D;3&amp;amp&#x3D;1') !== -1, 'Amp url present');
+      done();
+    });
+  });
+
+  lab.test('Handles template not found', done => {
+    server.inject({
+      url: '/empty2?amp=1'
+    }, response => {
+      Hoek.assert(response.result.indexOf('empty') !== -1, 'Fallback layout used');
       done();
     });
   });

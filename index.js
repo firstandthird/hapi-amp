@@ -5,6 +5,7 @@
 const fs = require('fs');
 const path = require('path');
 const async = require('async');
+const url = require('url');
 
 exports.register = function(server, options, next) {
   server.ext({
@@ -24,9 +25,18 @@ exports.register = function(server, options, next) {
 
       context.__isAMP = (request.query.amp);
 
+      const urlObj = request.url;
+
       if (!context.__isAMP) {
+        urlObj.query.amp = 1;
+        delete urlObj.search;
+        context.__AMPVersion = url.format(urlObj);
         return reply.continue();
       }
+
+      delete urlObj.query.amp;
+      delete urlObj.search;
+      context.__AMPOriginal = url.format(urlObj);
 
       const templatePath = request.response.source.compiled.settings.path;
       let template = request.response.source.template;
@@ -53,7 +63,12 @@ exports.register = function(server, options, next) {
         });
 
         if (!templateExists) {
-          return reply.continue();
+          urlObj.query.amp = 1;
+          delete urlObj.search;
+          context.__AMPVersion = url.format(urlObj);
+          delete context.__AMPOriginal;
+          context.__isAMP = false;
+          template = request.response.source.template;
         }
 
         const response = reply.view(template, context);
