@@ -22,7 +22,7 @@
     "handlebars": "^4.0.5",
     "hapi": "^16.0.2",
     "hoek": "^4.1.0",
-    "lab": "^11.2.1",
+    "lab": "^12.1.0",
     "vision": "^4.0.1"
   },
   "dependencies": {
