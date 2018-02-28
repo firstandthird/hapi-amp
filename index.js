@@ -1,18 +1,15 @@
 /* eslint max-len: 0, guard-for-in: 0 */
-
-'use strict';
-
 const fs = require('fs');
 const path = require('path');
 const async = require('async');
 const url = require('url');
 
-exports.register = function(server, options, next) {
+const register = async (server, options) => {
   server.ext({
     type: 'onPreResponse',
-    method: (request, reply) => {
+    method: (request, h) => {
       if (request.response.variety !== 'view') {
-        return reply.continue();
+        return h.continue;
       }
 
       // $lab:coverage:off$
@@ -23,7 +20,10 @@ exports.register = function(server, options, next) {
 
       const context = request.response.source.context;
 
-      context.__isAMP = (request.query.amp);
+      if (request.query.amp) {
+        context.__isAMP = true;//(request.query.amp) ? true : false;
+        // context.__isAMP = (request.query.amp) ? true : false;
+      }
 
       const urlObj = request.url;
 
@@ -31,7 +31,7 @@ exports.register = function(server, options, next) {
         urlObj.query.amp = 1;
         delete urlObj.search;
         context.__AMPVersion = url.format(urlObj);
-        return reply.continue();
+        return h.continue;
       }
 
       delete urlObj.query.amp;
@@ -70,8 +70,7 @@ exports.register = function(server, options, next) {
           context.__isAMP = false;
           template = request.response.source.template;
         }
-
-        const response = reply.view(template, context);
+        const response = h.view(template, context);
         const headers = request.response.headers;
 
         for (const header of Object.keys(headers)) {
@@ -82,11 +81,11 @@ exports.register = function(server, options, next) {
       });
     }
   });
-
-  return next();
 };
 
-exports.register.attributes = {
+exports.plugin = {
+  name: 'hapi-amp',
+  register,
   once: true,
   pkg: require('./package.json')
 };
