@@ -28,7 +28,7 @@ const register = (server, options) => {
       if (!context.__isAMP) {
         urlObj.query.amp = 1;
         delete urlObj.search;
-        context.__AMPVersion = url.format(urlObj);
+        context.__AMP_URL = url.format(urlObj);
         return h.continue;
       }
 
@@ -63,7 +63,7 @@ const register = (server, options) => {
       if (!templateExists) {
         urlObj.query.amp = 1;
         delete urlObj.search;
-        context.__AMPVersion = url.format(urlObj);
+        context.__AMP_URL = url.format(urlObj);
         delete context.__AMPOriginal;
         context.__isAMP = false;
         template = request.response.source.template;

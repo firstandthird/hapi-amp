@@ -14,7 +14,6 @@
   "author": "First+Third",
   "license": "MIT",
   "devDependencies": {
-    "coveralls": "^3.0.0",
     "eslint": "^4.18.1",
     "eslint-config-firstandthird": "^4.3.0",
     "eslint-plugin-import": "^2.9.0",
@@ -24,6 +23,5 @@
     "vision": "^5.3.1"
   },
   "dependencies": {
-    "async": "^2.1.4"
   }
 }
