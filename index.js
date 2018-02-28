@@ -1,10 +1,9 @@
 /* eslint max-len: 0, guard-for-in: 0 */
 const fs = require('fs');
 const path = require('path');
-const async = require('async');
 const url = require('url');
 
-const register = async (server, options) => {
+const register = (server, options) => {
   server.ext({
     type: 'onPreResponse',
     method: (request, h) => {
@@ -21,8 +20,7 @@ const register = async (server, options) => {
       const context = request.response.source.context;
 
       if (request.query.amp) {
-        context.__isAMP = true;//(request.query.amp) ? true : false;
-        // context.__isAMP = (request.query.amp) ? true : false;
+        context.__isAMP = true;
       }
 
       const urlObj = request.url;
@@ -42,43 +40,42 @@ const register = async (server, options) => {
       let template = request.response.source.template;
       template = `${template}-amp`;
 
-      async.map([
+      const templateStats = [
         path.join(templatePath, `${template}.html`),
         path.join(templatePath, `${template}.njk`)
-      ], (file, cb) => {
-        fs.stat(file, (err, stat) => {
-          if (err) {
-            return cb();
-          }
-
-          cb(null, stat);
-        });
-      }, (err, results) => { // eslint-disable-line handle-callback-err
-        let templateExists = false;
-
-        results.forEach(stat => {
-          if (stat && stat.isFile()) {
-            templateExists = true;
-          }
-        });
-
-        if (!templateExists) {
-          urlObj.query.amp = 1;
-          delete urlObj.search;
-          context.__AMPVersion = url.format(urlObj);
-          delete context.__AMPOriginal;
-          context.__isAMP = false;
-          template = request.response.source.template;
+      ].reduce((memo, templateToStat) => {
+        try {
+          memo.push(fs.statSync(templateToStat));
+          return memo;
+        } catch (e) {
+          return memo;
         }
-        const response = h.view(template, context);
-        const headers = request.response.headers;
+      }, []);
 
-        for (const header of Object.keys(headers)) {
-          response.header(header, headers[header]);
+      let templateExists = false;
+
+      templateStats.forEach(stat => {
+        if (stat && stat.isFile()) {
+          templateExists = true;
         }
-
-        response.code(request.response.statusCode);
       });
+
+      if (!templateExists) {
+        urlObj.query.amp = 1;
+        delete urlObj.search;
+        context.__AMPVersion = url.format(urlObj);
+        delete context.__AMPOriginal;
+        context.__isAMP = false;
+        template = request.response.source.template;
+      }
+      const response = h.view(template, context);
+      const headers = request.response.headers;
+
+      for (const header of Object.keys(headers)) {
+        response.header(header, headers[header]);
+      }
+
+      return response.code(request.response.statusCode);
     }
   });
 };
