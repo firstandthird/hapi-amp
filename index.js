@@ -1,7 +1,6 @@
 /* eslint max-len: 0, guard-for-in: 0 */
 const fs = require('fs');
 const path = require('path');
-const url = require('url');
 
 const register = (server, options) => {
   server.ext({
@@ -26,15 +25,13 @@ const register = (server, options) => {
       const urlObj = request.url;
 
       if (!context.__isAMP) {
-        urlObj.query.amp = 1;
-        delete urlObj.search;
-        context.__AMP_URL = url.format(urlObj);
+        urlObj.searchParams.set('amp', 1);
+        context.__AMP_URL = urlObj.href;
         return h.continue;
       }
 
-      delete urlObj.query.amp;
-      delete urlObj.search;
-      context.__AMPOriginal = url.format(urlObj);
+      urlObj.searchParams.delete('amp');
+      context.__AMPOriginal = urlObj.href;
 
       const templatePath = request.response.source.compiled.settings.path;
       let template = request.response.source.template;
@@ -61,9 +58,8 @@ const register = (server, options) => {
       });
 
       if (!templateExists) {
-        urlObj.query.amp = 1;
-        delete urlObj.search;
-        context.__AMP_URL = url.format(urlObj);
+        urlObj.searchParams.set('amp', 1);
+        context.__AMP_URL = urlObj.href;
         delete context.__AMPOriginal;
         context.__isAMP = false;
         template = request.response.source.template;

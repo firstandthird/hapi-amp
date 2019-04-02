@@ -14,12 +14,12 @@
   "author": "First+Third",
   "license": "MIT",
   "devDependencies": {
-    "eslint": "^4.18.1",
+    "eslint": "^5.16.0",
     "eslint-config-firstandthird": "^4.3.0",
     "eslint-plugin-import": "^2.9.0",
     "handlebars": "^4.0.11",
-    "hapi": "^17.2.0",
-    "tap": "^11.1.1",
+    "hapi": "^18.1.0",
+    "tap": "^12.6.1",
     "vision": "^5.3.1"
   },
   "dependencies": {}
